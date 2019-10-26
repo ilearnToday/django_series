@@ -20,8 +20,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'debug_toolbar',
+
     'main_page.apps.MainPageConfig',
+    'users.apps.UsersConfig',
 
 ]
 
@@ -93,3 +96,5 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
