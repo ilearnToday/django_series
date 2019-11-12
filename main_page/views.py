@@ -18,9 +18,18 @@ from django.contrib.auth.models import User
 class PostListView(ListView):
     model = Post
     template_name = 'main_page/main.html'
-    context_object_name = 'posts'
+    # context_object_name = 'posts'
     ordering = ['-date_posted']
-    paginate_by = 5
+    # paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        posts = Post.objects.select_related('author__profile')\
+            .only('author__username', 'title', 'content', 'date_posted', 'author__profile__profile_image')
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'posts': posts
+        })
+        return context
 
 
 class UserPostListView(ListView):
