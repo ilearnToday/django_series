@@ -9,6 +9,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Post
@@ -18,18 +19,11 @@ from django.contrib.auth.models import User
 class PostListView(ListView):
     model = Post
     template_name = 'main_page/main.html'
-    # context_object_name = 'posts'
+    queryset = Post.objects.select_related('author__profile') \
+        .only('author__username', 'title', 'content', 'date_posted', 'author__profile__profile_image')
+    context_object_name = 'posts'
     ordering = ['-date_posted']
-    # paginate_by = 5
-
-    def get_context_data(self, **kwargs):
-        posts = Post.objects.select_related('author__profile')\
-            .only('author__username', 'title', 'content', 'date_posted', 'author__profile__profile_image')
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'posts': posts
-        })
-        return context
+    paginate_by = 5
 
 
 class UserPostListView(ListView):
@@ -40,11 +34,15 @@ class UserPostListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Post.objects.filter(author=user).order_by('-date_posted')
+        return Post.objects.filter(author=user).select_related('author__profile') \
+            .only('author__username', 'title', 'content', 'date_posted', 'author__profile__profile_image')\
+            .order_by('-date_posted')
 
 
 class PostDetailView(DetailView):
     model = Post
+    queryset = Post.objects.select_related('author__profile') \
+        .only('author__username', 'title', 'content', 'date_posted', 'author__profile__profile_image')
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -56,7 +54,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content']
 
@@ -84,4 +82,3 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 def about(request):
     return render(request, 'main_page/about.html', {'title': 'About page'})
-
