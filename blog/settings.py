@@ -25,9 +25,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'debug_toolbar',
+    'rest_framework',
 
     'main_page.apps.MainPageConfig',
     'users.apps.UsersConfig',
+    'posts_api_v1.apps.PostsApiV1Config'
 
 ]
 
@@ -87,6 +89,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS':
+        'posts_api_v1.pagination.LimitOffsetPaginationWithMaxLimit',
+    'PAGE_SIZE': 5,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
 
 LANGUAGE_CODE = 'en-us'
 
