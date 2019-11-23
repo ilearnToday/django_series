@@ -23,9 +23,11 @@ class Base(Configuration):
         'django.contrib.staticfiles',
         'crispy_forms',
         'debug_toolbar',
+        'rest_framework',
 
         'main_page.apps.MainPageConfig',
         'users.apps.UsersConfig',
+        'posts_api_v1.apps.PostsApiV1Config'
 
     ]
 
@@ -70,7 +72,6 @@ class Base(Configuration):
         }
     }
 
-
     AUTH_PASSWORD_VALIDATORS = [
         {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
         {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -78,6 +79,15 @@ class Base(Configuration):
         {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
     ]
 
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS':
+            'posts_api_v1.pagination.LimitOffsetPaginationWithMaxLimit',
+        'PAGE_SIZE': 5,
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
+        )
+    }
 
     LANGUAGE_CODE = 'en-us'
 
@@ -129,3 +139,14 @@ class Local(Base):
 class Production(Base):
     DEBUG = False
 
+    SECRET_KEY = SECRET_KEY
+
+    ALLOWED_HOSTS = [
+        'localhost'
+    ]
+
+    MEDIA_URL = '/media/'
+
+    @property
+    def MEDIA_ROOT(self):
+        return os.path.join(self.BASE_DIR, 'media')

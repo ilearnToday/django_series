@@ -7,9 +7,11 @@ from django.contrib.auth import views as auth_views
 
 from users import views as user_views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main_page.urls')),
+    path('api_v1/', include('posts_api_v1.urls')),
 
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
@@ -33,6 +35,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar
+    from django.conf.urls.static import static
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
 
